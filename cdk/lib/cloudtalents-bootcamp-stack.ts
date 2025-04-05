@@ -19,77 +19,79 @@ export class CloudtalentsBootcampStack extends cdk.Stack {
     // ----------------------------------------------------------------------
     // IAM Policy
     // ----------------------------------------------------------------------
-    const policyDocument = new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          sid: 'GitHubActionsCDK',
-          effect: iam.Effect.ALLOW,
-          actions: [
-            //vpc
-            'ec2:CreateVpc',
-            'ec2:DescribeVpcs',
-            'ec2:DeleteVpc',
-            //subnets
-            'ec2:CreateSubnet',
-            'ec2:DescribeSubnets',
-            'ec2:DeleteSubnet',
-            //igw
-            'ec2:CreateInternetGateway',
-            'ec2:AttachInternetGateway',
-            'ec2:AttachInternetGateway',
-            'ec2:DetachInternetGateway',
-            'ec2:DeleteInternetGateway',
-            //route tables
-            'ec2:CreateRouteTable',
-            'ec2:AssociateRouteTable',
-            'ec2:CreateRoute',
-            'ec2:DeleteRoute',
-            'ec2:DeleteRouteTable',
-            //security groups
-            'ec2:CreateSecurityGroup',
-            'ec2:AuthorizeSecurityGroupIngress',
-            'ec2:AuthorizeSecurityGroupEgress',
-            'ec2:DeleteSecurityGroup',
-            //network acl
-            'ec2:CreateNetworkAcl',
-            'ec2:CreateNetworkAclEntry',
-            'ec2:DeleteNetworkAcl',
-            'ec2:DeleteNetworkAclEntry',
-          ],
-          resources: [`arn:aws:ec2:${this.account}:*`],
-        }),
-      ],
-    });
+    // const policyDocument = new iam.PolicyDocument({
+    //   statements: [
+    //     new iam.PolicyStatement({
+    //       sid: 'GitHubActionsCDK',
+    //       effect: iam.Effect.ALLOW,
+    //       actions: [
+    //         //systems manager
+    //         'ssm:GetParameter',
+    //         //vpc
+    //         'ec2:CreateVpc',
+    //         'ec2:DescribeVpcs',
+    //         'ec2:DeleteVpc',
+    //         //subnets
+    //         'ec2:CreateSubnet',
+    //         'ec2:DescribeSubnets',
+    //         'ec2:DeleteSubnet',
+    //         //igw
+    //         'ec2:CreateInternetGateway',
+    //         'ec2:AttachInternetGateway',
+    //         'ec2:AttachInternetGateway',
+    //         'ec2:DetachInternetGateway',
+    //         'ec2:DeleteInternetGateway',
+    //         //route tables
+    //         'ec2:CreateRouteTable',
+    //         'ec2:AssociateRouteTable',
+    //         'ec2:CreateRoute',
+    //         'ec2:DeleteRoute',
+    //         'ec2:DeleteRouteTable',
+    //         //security groups
+    //         'ec2:CreateSecurityGroup',
+    //         'ec2:AuthorizeSecurityGroupIngress',
+    //         'ec2:AuthorizeSecurityGroupEgress',
+    //         'ec2:DeleteSecurityGroup',
+    //         //network acl
+    //         'ec2:CreateNetworkAcl',
+    //         'ec2:CreateNetworkAclEntry',
+    //         'ec2:DeleteNetworkAcl',
+    //         'ec2:DeleteNetworkAclEntry',
+    //       ],
+    //       resources: [`arn:aws:ec2:${this.account}:*`],
+    //     }),
+    //   ],
+    // });
 
-    const githubPolicy = new iam.ManagedPolicy(this, 'GitHubCdkPolicy', {
-      managedPolicyName: 'GitHubCdkPolicy',
-      description:
-        'Allow read-write access to create CDK resources',
-      document: policyDocument,
-    });
+    // const githubPolicy = new iam.ManagedPolicy(this, 'GitHubIacPolicy', {
+    //   managedPolicyName: 'GitHubIacPolicy',
+    //   description:
+    //     'Allow read-write access to create CDK resources',
+    //   document: policyDocument,
+    // });
 
     // ----------------------------------------------------------------------
     // IAM Role
     // ----------------------------------------------------------------------
-    const githubRole = new iam.Role(this, 'GitHubCdkRole', {
-      roleName: 'GitHubCdkRole',
-      description: 'Role used by GitHub Actions to provision resources via CDK',
-      maxSessionDuration: cdk.Duration.hours(2),
-      managedPolicies: [githubPolicy],
-      assumedBy: new iam.WebIdentityPrincipal(githubProvider.openIdConnectProviderArn, {
-        StringEquals: {
-          'token.actions.githubusercontent.com:aud': ['sts.amazonaws.com'],
-        },
-        StringLike: {
-          'token.actions.githubusercontent.com:sub': ['repo:rickyriosp/cloudtalents-bootcamp:*'],
-        },
-      }),
-    });
+    // const githubRole = new iam.Role(this, 'GitHubIacRole', {
+    //   roleName: 'GitHubIacRole',
+    //   description: 'Role used by GitHub Actions to provision resources via CDK',
+    //   maxSessionDuration: cdk.Duration.hours(2),
+    //   managedPolicies: [githubPolicy],
+    //   assumedBy: new iam.WebIdentityPrincipal(githubProvider.openIdConnectProviderArn, {
+    //     StringEquals: {
+    //       'token.actions.githubusercontent.com:aud': ['sts.amazonaws.com'],
+    //     },
+    //     StringLike: {
+    //       'token.actions.githubusercontent.com:sub': ['repo:rickyriosp/cloudtalents-bootcamp:*'],
+    //     },
+    //   }),
+    // });
 
-    new cdk.CfnOutput(this, 'GitHubCdkRoleOutput', {
-      key: 'GitHubCdkRoleName',
-      value: githubRole.roleName,
-    });
+    // new cdk.CfnOutput(this, 'GitHubCdkRoleOutput', {
+    //   key: 'GitHubCdkRoleName',
+    //   value: githubRole.roleName,
+    // });
 
     // ----------------------------------------------------------------------
     // VPC

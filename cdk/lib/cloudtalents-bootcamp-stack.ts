@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ram from 'aws-cdk-lib/aws-ram';
 import { Construct } from 'constructs';
 
 export class CloudtalentsBootcampStack extends cdk.Stack {
@@ -19,7 +20,6 @@ export class CloudtalentsBootcampStack extends cdk.Stack {
     // ----------------------------------------------------------------------
     // VPC
     // ----------------------------------------------------------------------
-
     // Create a VPC with public subnets (this auto-creates an IGW)
     const vpc = new ec2.Vpc(this, 'vpc', {
       vpcName: 'vpc-network',
@@ -56,5 +56,25 @@ export class CloudtalentsBootcampStack extends cdk.Stack {
 
     // Set the Name tag for the IGW
     cdk.Tags.of(igw).add('Name', 'igw-networkvpc');
+
+    // ----------------------------------------------------------------------
+    // RAM Resource Share
+    // ----------------------------------------------------------------------
+    const resourceShare = new ram.CfnResourceShare(this, 'NetworkVpcShare', {
+      name: 'NetworkVpcShare',
+      allowExternalPrincipals: false,
+      principals: [
+        //Sandbox OU
+        'arn:aws:organizations::746669212492:ou/o-64bj98k0kx/ou-xllq-xm6a7sjq',
+      ],
+      resourceArns: [
+        //public subnets
+        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-02f9106701ccaccdc',
+        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-0a62b5636c13717f7',
+        //private subnets
+        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-0a1c1bb379d1fc335',
+        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-019b07d9588ae5085',
+      ],
+    });
   }
 }

@@ -60,6 +60,16 @@ export class CloudtalentsBootcampStack extends cdk.Stack {
     // ----------------------------------------------------------------------
     // RAM Resource Share
     // ----------------------------------------------------------------------
+    const publicSubnets = vpc.selectSubnets({
+      onePerAz: false,
+      subnetType: ec2.SubnetType.PUBLIC
+    });
+
+    const privateSubnets = vpc.selectSubnets({
+      onePerAz: false,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+    });
+
     const resourceShare = new ram.CfnResourceShare(this, 'NetworkVpcShare', {
       name: 'NetworkVpcShare',
       allowExternalPrincipals: false,
@@ -69,11 +79,11 @@ export class CloudtalentsBootcampStack extends cdk.Stack {
       ],
       resourceArns: [
         //public subnets
-        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-02f9106701ccaccdc',
-        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-0a62b5636c13717f7',
+        `arn:aws:ec2:us-east-1:${vpc.env.account}:subnet/${publicSubnets.subnetIds[0]}`,
+        `arn:aws:ec2:us-east-1:${vpc.env.account}:subnet/${publicSubnets.subnetIds[1]}`,
         //private subnets
-        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-0a1c1bb379d1fc335',
-        'arn:aws:ec2:us-east-1:196820083420:subnet/subnet-019b07d9588ae5085',
+        `arn:aws:ec2:us-east-1:${vpc.env.account}:subnet/${privateSubnets.subnetIds[0]}`,
+        `arn:aws:ec2:us-east-1:${vpc.env.account}:subnet/${privateSubnets.subnetIds[1]}`,
       ],
     });
   }
